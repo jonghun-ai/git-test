@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>구독 케어 안내 도우미</title>
+<style>
+  :root{
+    --navy:#6B1029;
+    --steel:#C6134D;
+    --steel-light:#FBEAF0;
+    --gold:#D98324;
+    --gold-bg:#FFF6E5;
+    --teal:#2E8B84;
+    --teal-bg:#E4F8F6;
+    --amber:#D98324;
+    --amber-bg:#FDF1DF;
+    --grey:#6b7280;
+    --border:#ecdde2;
+    --bg:#faf7f8;
+    --card:#ffffff;
+    --danger:#e05a5a;
+    --brand-1:#5C0D28;
+    --brand-2:#A6093D;
+    --brand-3:#E8677E;
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",sans-serif;
+    background:var(--bg);
+    color:#1a2233;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:calc(24px + var(--safe-bottom));
+  }
+  button{font-family:inherit;}
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky;
+    top:0;
+    z-index:50;
+    background:linear-gradient(120deg,var(--brand-1) 0%,var(--brand-2) 55%,var(--brand-3) 100%);
+    padding:calc(14px + var(--safe-top)) 14px 12px;
+    box-shadow:0 2px 10px rgba(90,15,40,.18);
+  }
+  .brand{
+    color:#fff;
+    font-size:1.05rem;
+    font-weight:700;
+    letter-spacing:-0.2px;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+  }
+  .brand .badge{
+    font-size:0.62rem;
+    font-weight:600;
+    color:#cfe0ff;
+    background:rgba(255,255,255,.12);
+    padding:2px 7px;
+    border-radius:20px;
+  }
+
+  .search-wrap{position:relative;}
+  .search-box{
+    display:flex;
+    align-items:center;
+    background:#fff;
+    border-radius:12px;
+    padding:0 10px;
+    height:46px;
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
+  }
+  .search-box svg{flex-shrink:0;color:var(--grey);}
+  .search-box input{
+    flex:1;
+    border:none;
+    outline:none;
+    font-size:0.95rem;
+    padding:0 8px;
+    color:#1a2233;
+    background:transparent;
+    min-width:0;
+  }
+  .search-box input::placeholder{color:#9aa4b8;}
+  .clear-btn{
+    border:none;
+    background:#eceef3;
+    color:#5b6579;
+    width:22px;height:22px;
+    border-radius:50%;
+    font-size:0.72rem;
+    line-height:1;
+    cursor:pointer;
+    flex-shrink:0;
+  }
+
+  .autocomplete{
+    position:absolute;
+    top:calc(100% + 6px);
+    left:0;right:0;
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 10px 26px rgba(15,25,50,.22);
+    overflow:hidden;
+    z-index:60;
+  }
+  .ac-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:11px 14px;
+    font-size:0.88rem;
+    cursor:pointer;
+    border-bottom:1px solid #f0f2f7;
+  }
+  .ac-item:last-child{border-bottom:none;}
+  .ac-item:active,.ac-item.hover{background:var(--steel-light);}
+  .ac-icon{font-size:1.1rem;}
+  .ac-main{flex:1;min-width:0;}
+  .ac-name{font-weight:700;color:var(--navy);font-size:0.9rem;}
+  .ac-name mark{background:#FFE9A8;color:inherit;border-radius:3px;padding:0 1px;}
+  .ac-meta{font-size:0.74rem;color:var(--grey);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .ac-empty{padding:16px;text-align:center;color:var(--grey);font-size:0.85rem;}
+
+  .chip-row{
+    display:flex;
+    gap:7px;
+    overflow-x:auto;
+    margin-top:11px;
+    padding-bottom:2px;
+    scrollbar-width:none;
+  }
+  .chip-row::-webkit-scrollbar{display:none;}
+  .chip{
+    flex-shrink:0;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    background:rgba(255,255,255,.14);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.25);
+    padding:7px 13px;
+    border-radius:20px;
+    font-size:0.8rem;
+    font-weight:600;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .chip.active{background:#fff;color:var(--navy);border-color:#fff;}
+
+  /* ---------- Main list ---------- */
+  .product-list{padding:14px 12px 6px;max-width:640px;margin:0 auto;}
+
+  .product-card{
+    background:var(--card);
+    border-radius:16px;
+    border:1px solid var(--border);
+    margin-bottom:12px;
+    overflow:hidden;
+    box-shadow:0 1px 3px rgba(20,30,60,.05);
+    scroll-margin-top:150px;
+    transition:box-shadow .15s ease;
+  }
+  .product-card.open{box-shadow:0 6px 20px rgba(31,56,100,.14);}
+
+  .product-header{
+    width:100%;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:15px 16px;
+    background:none;
+    border:none;
+    cursor:pointer;
+    text-align:left;
+  }
+  .p-icon{
+    width:48px;height:48px;
+    display:flex;align-items:center;justify-content:center;
+    background:var(--steel-light);
+    border-radius:12px;
+    flex-shrink:0;
+    color:var(--steel);
+  }
+  .p-icon svg{width:26px;height:26px;}
+  .p-main{flex:1;min-width:0;}
+  .p-name{font-size:1.02rem;font-weight:700;color:var(--navy);}
+  .p-sub{font-size:0.78rem;color:var(--grey);font-weight:400;margin-left:5px;}
+  .p-tiers{font-size:0.76rem;color:#4a5875;margin-top:3px;}
+  .chevron{
+    font-size:0.95rem;
+    color:var(--grey);
+    transition:transform .2s ease;
+    flex-shrink:0;
+  }
+  .product-card.open .chevron{transform:rotate(180deg);color:var(--steel);}
+
+  .product-body{
+    display:none;
+    padding:0 16px 18px;
+    border-top:1px solid var(--border);
+  }
+  .product-card.open .product-body{display:block;animation:slide .18s ease;}
+  @keyframes slide{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:translateY(0);}}
+
+  /* tier segmented control */
+  .tier-tabs{
+    display:flex;
+    gap:6px;
+    margin:14px 0 16px;
+    background:#eef1f8;
+    padding:4px;
+    border-radius:11px;
+  }
+  .tier-btn{
+    flex:1;
+    border:none;
+    background:transparent;
+    padding:9px 4px;
+    font-size:0.82rem;
+    font-weight:700;
+    color:#5b6579;
+    border-radius:8px;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .tier-btn.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(20,30,60,.15);}
+  .tier-btn .star{color:var(--gold);margin-left:2px;}
+
+  /* timeline section */
+  .timeline-box{
+    background:#f8f9fd;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 12px 10px;
+    margin-bottom:16px;
+  }
+  .timeline-title{
+    font-size:0.82rem;
+    font-weight:700;
+    color:var(--navy);
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+  .tl-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:14px;}
+  .tl-row:last-of-type{margin-bottom:4px;}
+  .tl-label{
+    width:58px;
+    flex-shrink:0;
+    font-size:0.68rem;
+    font-weight:700;
+    color:#33415c;
+    padding-top:6px;
+    line-height:1.3;
+  }
+  .tl-track-wrap{flex:1;min-width:0;}
+  .tl-track{
+    position:relative;
+    height:18px;
+    background:#e7ebf4;
+    border-radius:9px;
+  }
+  .tl-dot{
+    position:absolute;
+    top:50%;
+    width:12px;height:12px;
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    border:2px solid #fff;
+    box-shadow:0 0 0 1px rgba(0,0,0,.08);
+  }
+  .tl-dot.sq{border-radius:3px;}
+  .tl-month{
+    position:absolute;
+    top:100%;
+    transform:translateX(-50%);
+    font-size:0.58rem;
+    color:var(--grey);
+    margin-top:2px;
+    white-space:nowrap;
+  }
+  .tl-none{font-size:0.72rem;color:#a3abbd;font-style:italic;padding-top:6px;}
+  .tl-legend{font-size:0.66rem;color:var(--grey);margin-top:16px;line-height:1.5;}
+  .tl-legend .sw{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+  .tl-note{font-size:0.68rem;color:#a3abbd;margin-top:6px;font-style:italic;}
+
+  /* detail list */
+  .detail-list{display:flex;flex-direction:column;gap:10px;}
+  .detail-item{
+    background:#fbfcfe;
+    border:1px solid var(--border);
+    border-radius:12px;
+    padding:12px 13px;
+  }
+  .detail-item.premium{background:var(--gold-bg);border-color:#f3dda6;}
+  .d-head{display:flex;align-items:center;gap:7px;margin-bottom:5px;}
+  .d-icon{font-size:0.95rem;}
+  .d-label{font-size:0.82rem;font-weight:700;color:var(--navy);}
+  .d-info{
+    width:15px;height:15px;border-radius:50%;
+    background:#dde3f0;color:#5b6579;
+    font-size:0.62rem;font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    margin-left:auto;
+  }
+  .d-desc{
+    display:none;
+    font-size:0.72rem;
+    color:var(--grey);
+    background:#eef1f8;
+    border-radius:7px;
+    padding:7px 9px;
+    margin-bottom:6px;
+    line-height:1.4;
+  }
+  .d-desc.show{display:block;}
+  .d-value{
+    font-size:0.86rem;
+    color:#2a3652;
+    line-height:1.55;
+    white-space:pre-line;
+  }
+  .d-value.dash{color:#a3abbd;font-style:italic;}
+
+  .empty-state{
+    text-align:center;
+    color:var(--grey);
+    font-size:0.9rem;
+    padding:60px 20px;
+  }
+
+  @media (min-width:480px){
+    .p-icon{width:48px;height:48px;font-size:1.7rem;}
+    .p-name{font-size:1.08rem;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">📋 구독 케어 안내 도우미 <span class="badge">매니저용</span></div>
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="searchInput" type="text" placeholder="제품명 검색 (예: 세탁기, ㅅㅌㄱ)" autocomplete="off">
+      <button class="clear-btn" id="clearBtn" hidden>✕</button>
+    </div>
+    <div class="autocomplete" id="autocomplete" hidden></div>
+  </div>
+  <div class="chip-row" id="chipRow"></div>
+</div>
+
+<main class="product-list" id="productList"></main>
+<div class="empty-state" id="emptyState" hidden>검색 결과가 없습니다.</div>
+
+<script>
+const DATA = [{"name": "세탁기", "sub": "트롬", "icon": "🧺", "tiers": ["프리미엄", "라이트플러스", "라이트"], "items": [{"label": "방문관리", "vals": ["24개월마다, 총 3회", "6개월마다, 총 12회", "6개월마다, 총 12회"]}, {"label": "자가관리", "vals": ["-", "-", "-"]}, {"label": "필터·소모품", "vals": ["배수 필터 교체 (48개월차, 1회)\n고무패킹 교체 (48개월차, 1회)", "배수 필터 교체 (24개월차, 1회)", "배수 필터 교체 (24개월차, 1회)"]}, {"label": "살균·클리닝", "vals": ["배수필터 세척\n세제함·스팀노즐·도어 세척", "배수필터 세척\n세제함·스팀노즐·도어 세척", "배수필터 세척\n세제함·스팀노즐·도어 세척"]}, {"label": "성능 점검", "vals": ["성능/작동 점검", "성능/작동 점검", "성능/작동 점검"]}, {"label": "무상 서비스", "vals": ["A/S", "A/S", "A/S"]}], "img": "https://www.lge.co.kr/kr/images/washing-machines/md09767827/gallery/medium01.jpg"}, {"name": "냉장고", "sub": "STEM 얼음정수", "icon": "🧊", "tiers": ["프리미엄", "라이트", "기본"], "items": [{"label": "방문관리", "vals": ["3개월마다, 총 24회", "3개월마다, 총 24회", "3개월마다, 총 24회"]}, {"label": "자가관리", "vals": ["-", "-", "-"]}, {"label": "필터·소모품", "vals": ["워터 필터 교체 (3개월마다)\n퓨어프레시 필터 교체 (12개월마다)", "워터 필터 교체 (3개월마다)\n퓨어프레시 필터 교체 (12개월마다)", "워터 필터 교체 (3개월마다)"]}, {"label": "살균·클리닝", "vals": ["유로 고온살균\n얼음저장통 세척\n고무패킹 케어", "유로 고온살균\n얼음저장통 세척\n고무패킹 케어", "고온·고압 살균\n얼음저장통 세척\n고무패킹 케어"]}, {"label": "성능 점검", "vals": ["성능 점검", "-", "성능 점검"]}, {"label": "무상 서비스", "vals": ["철거·재설치 (계약기간 내 1회), A/S", "철거·재설치 (계약기간 내 1회), A/S", "철거·재설치 (계약기간 내 1회), A/S"]}], "img": "https://www.lge.co.kr/kr/images/refrigerators/md08920827/gallery/medium01.jpg"}, {"name": "정수기", "sub": "", "icon": "💧", "tiers": ["스탠드형", "6개월형", "12개월형"], "items": [{"label": "방문관리", "vals": ["3개월마다, 총 24회", "6개월마다, 총 12회", "12개월마다, 총 6회"]}, {"label": "자가관리", "vals": ["6개월마다 필터", "6개월마다 필터", "6개월마다 필터"]}, {"label": "필터·소모품", "vals": ["정수 필터 교체 (주기는 제품별 상이)", "정수 필터 교체", "정수 필터 교체"]}, {"label": "살균·클리닝", "vals": ["직수관·출수구 고온/고압 살균\n물받이·필터연결부 세척", "동일", "동일"]}, {"label": "성능 점검", "vals": ["누수 점검\n수질검사 (요청 시)", "동일", "동일"]}, {"label": "무상 서비스", "vals": ["A/S", "A/S", "A/S"]}], "img": "https://www.lge.co.kr/kr/images/water-purifiers/md10017840/gallery/medium01.jpg"}, {"name": "공기청정기", "sub": "", "icon": "🍃", "tiers": ["프리미엄", "라이트플러스"], "items": [{"label": "방문관리", "vals": ["3개월마다, 총 24회\n6개월마다, 총 12회", "3개월마다, 총 24회\n6개월마다, 총 12회"]}, {"label": "자가관리", "vals": ["12개월마다 필터", "12개월마다 필터"]}, {"label": "필터·소모품", "vals": ["복합필터 교체 (12개월마다, 총 6회)\n극세필터 교체", "복합필터 교체 (12개월마다, 총 6회)\n극세필터 교체"]}, {"label": "살균·클리닝", "vals": ["클린부스터 분해세척", "클린부스터 분해세척"]}, {"label": "성능 점검", "vals": ["공기질 센서 점검\n성능/작동 점검", "공기질 센서 점검\n성능/작동 점검"]}, {"label": "무상 서비스", "vals": ["A/S", "A/S"]}], "img": "https://www.lge.co.kr/kr/images/air-purifier/md08044791/gallery/medium03.jpg"}, {"name": "에어컨", "sub": "", "icon": "❄️", "tiers": ["프리미엄", "라이트플러스"], "items": [{"label": "방문관리", "vals": ["12개월마다, 총 6회", "12개월마다, 총 6회"]}, {"label": "자가관리", "vals": ["-", "-"]}, {"label": "필터·소모품", "vals": ["공기청정필터 교체 (대상 모델, 12개월차 1회)", "공기청정필터 교체 (대상 모델, 12개월차 1회)"]}, {"label": "살균·클리닝", "vals": ["필터 세척", "필터 세척"]}, {"label": "성능 점검", "vals": ["설치환경·냉방·배수 성능 및 작동 점검", "설치환경·냉방·배수 성능 및 작동 점검"]}, {"label": "무상 서비스", "vals": ["철거·재설치 (계약기간 내 1회)\nA/S (냉매충전 무상)", "철거·재설치 (계약기간 내 1회)\nA/S (냉매충전 무상)"]}], "img": "https://www.lge.co.kr/kr/images/air-conditioners/md10492849/gallery/medium01.jpg"}, {"name": "스타일러", "sub": "3벌", "icon": "👔", "tiers": ["프리미엄", "라이트", "베이직"], "items": [{"label": "방문관리", "vals": ["12개월마다, 총 6회", "12개월마다, 총 6회", "-"]}, {"label": "자가관리", "vals": ["-", "-", "12개월마다, 총 6회"]}, {"label": "필터·소모품", "vals": ["급/배수통 교체 (36개월차, 1회)\n향기시트 제공", "-", "급/배수통 배송 (36개월차, 1회)\n향기시트 배송 (12개월마다, 총 6회)"]}, {"label": "살균·클리닝", "vals": ["급/배수통 및 기계실 입구 클리닝", "내부 및 도어 세정", "-"]}, {"label": "성능 점검", "vals": ["성능/작동 점검", "성능/작동 점검", "-"]}, {"label": "무상 서비스", "vals": ["A/S", "A/S", "A/S"]}], "img": "https://www.lge.co.kr/kr/images/lg-styler/md08040392/gallery/medium01.jpg"}];
+
+const ITEM_META = {
+  "방문관리":  {icon:"🚗", desc:"전문 매니저가 정기적으로 방문하여 제품을 관리해 드리는 서비스입니다.", color:"var(--steel)"},
+  "자가관리":  {icon:"🙋", desc:"방문 관리 사이 고객님께서 직접 관리하셔야 하는 항목입니다.", color:"var(--teal)"},
+  "필터·소모품":{icon:"🔧", desc:"필터 등 소모품의 교체 주기 및 제공 방식입니다.", color:"var(--amber)"},
+  "살균·클리닝":{icon:"✨", desc:"위생을 위한 살균 및 세척 관리 항목입니다. (방문관리 시 함께 진행)", color:"var(--grey)"},
+  "성능 점검": {icon:"🔍", desc:"제품이 정상적으로 작동하는지 점검하는 항목입니다. (방문관리 시 함께 진행)", color:"var(--grey)"},
+  "무상 서비스":{icon:"🎁", desc:"계약 기간 중 무상으로 제공되는 A/S 등 부가 서비스입니다.", color:"var(--grey)"}
+};
+const TIMELINE_ROWS = ["방문관리","자가관리","필터·소모품"];
+
+/* ---------------- 제품 모양 아이콘 (인라인 SVG, 외부 네트워크 불필요) ---------------- */
+const SVG_ATTR = 'viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"';
+const PRODUCT_SVG = {
+  "세탁기": `<svg ${SVG_ATTR}>
+      <rect x="3" y="2" width="18" height="20" rx="2.2"/>
+      <line x1="3" y1="6.2" x2="21" y2="6.2"/>
+      <circle cx="7" cy="4.1" r="0.55" fill="currentColor" stroke="none"/>
+      <circle cx="9.6" cy="4.1" r="0.55" fill="currentColor" stroke="none"/>
+      <circle cx="12" cy="14" r="5.3"/>
+      <circle cx="12" cy="14" r="2.4"/>
+    </svg>`,
+  "냉장고": `<svg ${SVG_ATTR}>
+      <rect x="5.5" y="2" width="13" height="20" rx="2"/>
+      <line x1="5.5" y1="9.3" x2="18.5" y2="9.3"/>
+      <line x1="9" y1="4.3" x2="9" y2="7"/>
+      <line x1="9" y1="11.6" x2="9" y2="14.3"/>
+    </svg>`,
+  "정수기": `<svg ${SVG_ATTR}>
+      <rect x="6.5" y="2" width="11" height="12.5" rx="2"/>
+      <line x1="9.3" y1="6.2" x2="14.7" y2="6.2"/>
+      <line x1="9.3" y1="9.6" x2="14.7" y2="9.6"/>
+      <rect x="10.5" y="14.5" width="3" height="2" fill="currentColor" stroke="none"/>
+      <path d="M12 22c1.5 0 2.6-1.15 2.6-2.5 0-1.5-2.6-4-2.6-4s-2.6 2.5-2.6 4C9.4 20.85 10.5 22 12 22z" fill="currentColor" stroke="none"/>
+    </svg>`,
+  "공기청정기": `<svg ${SVG_ATTR}>
+      <rect x="7.3" y="3.2" width="9.4" height="17.6" rx="3.4"/>
+      <line x1="10.3" y1="17" x2="13.7" y2="17"/>
+      <path d="M4.2 8.4c1.6-1 1.6-3.4 0-4.6"/>
+      <path d="M4.2 15.6c1.9-1.3 1.9-4.3 0-5.8"/>
+    </svg>`,
+  "에어컨": `<svg ${SVG_ATTR}>
+      <rect x="2" y="5" width="20" height="7" rx="2.2"/>
+      <circle cx="5.4" cy="8.5" r="0.55" fill="currentColor" stroke="none"/>
+      <path d="M5 15.3c1.1 1 1.1 3 0 4"/>
+      <path d="M9.2 15.3c1.1 1.4 1.1 3.7 0 5.3"/>
+      <path d="M13.4 15.3c1.1 1 1.1 3 0 4"/>
+    </svg>`,
+  "스타일러": `<svg ${SVG_ATTR}>
+      <rect x="5" y="2" width="14" height="20" rx="2"/>
+      <path d="M12 6.3v1.7"/>
+      <path d="M8 10.2c0-1.55 1.8-2.6 4-2.6s4 1.05 4 2.6"/>
+      <line x1="6.2" y1="14.3" x2="17.8" y2="14.3"/>
+    </svg>`
+};
+
+/* ---------------- 초성 검색 유틸 ---------------- */
+const CHO = ['ㄱ','ㄲ','ㄴ','ㄷ','ㄸ','ㄹ','ㅁ','ㅂ','ㅃ','ㅅ','ㅆ','ㅇ','ㅈ','ㅉ','ㅊ','ㅋ','ㅌ','ㅍ','ㅎ'];
+function chosung(str){
+  let out = '';
+  for (const ch of String(str)) {
+    const code = ch.charCodeAt(0) - 0xAC00;
+    if (code >= 0 && code <= 11171) out += CHO[Math.floor(code/588)];
+    else out += ch;
+  }
+  return out;
+}
+function norm(s){ return String(s).toLowerCase().replace(/\s+/g,''); }
+function matches(target, query){
+  if (!query) return true;
+  const t = norm(target), q = norm(query);
+  if (t.includes(q)) return true;
+  return chosung(t).includes(chosung(q));
+}
+
+/* ---------------- 케어 주기 파싱 ---------------- */
+function parseLine(line){
+  line = line.trim();
+  if (!line) return null;
+  const mMada = line.match(/(\d+)\s*개월마다/);
+  const mCnt  = line.match(/총\s*(\d+)\s*회/);
+  const mOnce = line.match(/(\d+)\s*개월차/);
+  if (mMada) {
+    return {raw:line, kind:'recurring', interval:+mMada[1], count: mCnt ? +mCnt[1] : null};
+  }
+  if (mOnce) {
+    return {raw:line, kind:'once', month:+mOnce[1]};
+  }
+  return {raw:line, kind:'none'};
+}
+function parseCell(text){
+  if (text === null || text === undefined) return [];
+  const s = String(text).trim();
+  if (s === '' || s === '-') return [];
+  return s.split('\n').map(parseLine).filter(Boolean);
+}
+function eventsToMonths(ev, fallbackHorizon){
+  if (ev.kind === 'once') return [ev.month];
+  if (ev.kind === 'recurring') {
+    const count = ev.count || Math.max(1, Math.round(fallbackHorizon / ev.interval));
+    const months = [];
+    for (let i=1;i<=count;i++) months.push(ev.interval*i);
+    return months;
+  }
+  return [];
+}
+
+function buildTimeline(product, tierIdx){
+  // gather parsed events per row
+  const rowsData = TIMELINE_ROWS.map(label=>{
+    const item = product.items.find(it=>it.label===label);
+    const raw = item ? item.vals[tierIdx] : null;
+    const events = parseCell(raw);
+    return {label, events};
+  });
+
+  // determine horizon primarily from 방문관리
+  let horizon = 24;
+  rowsData.forEach(r=>{
+    r.events.forEach(ev=>{
+      if (ev.kind==='recurring' && ev.count) horizon = Math.max(horizon, ev.interval*ev.count);
+      if (ev.kind==='once') horizon = Math.max(horizon, ev.month);
+    });
+  });
+
+  const lanes = rowsData.map(r=>{
+    const subEvents = r.events.filter(ev=>ev.kind!=='none');
+    const monthsBySub = subEvents.map(ev=>({raw:ev.raw, months: eventsToMonths(ev, horizon)}));
+    let maxMonth = 0;
+    monthsBySub.forEach(m=>m.months.forEach(mo=>{maxMonth=Math.max(maxMonth,mo);}));
+    return {label:r.label, subEvents:monthsBySub, hasData: monthsBySub.length>0, maxMonth};
+  });
+  lanes.forEach(l=>{ if(l.maxMonth>horizon) horizon = l.maxMonth; });
+
+  return {horizon, lanes};
+}
+
+const LANE_COLOR = {"방문관리":"var(--steel)", "자가관리":"var(--teal)", "필터·소모품":"var(--amber)"};
+const LANE_SHORT = {"방문관리":"방문\n관리", "자가관리":"자가\n관리", "필터·소모품":"필터·\n소모품"};
+
+function renderTimeline(product, tierIdx){
+  const {horizon, lanes} = buildTimeline(product, tierIdx);
+  const anyData = lanes.some(l=>l.hasData);
+  if (!anyData) {
+    return `<div class="timeline-box"><div class="timeline-title">📅 케어 주기 한눈에 보기</div><div class="tl-none">이 플랜은 시기가 정해진 방문형 관리가 없습니다.</div></div>`;
+  }
+
+  const ticks = [0, 0.25, 0.5, 0.75, 1].map(f=>Math.round(horizon*f));
+  const fmt = m => m>=12 ? (m%12===0 ? (m/12)+'년' : (m/12).toFixed(1)+'년') : m+'개월';
+
+  const rowsHtml = lanes.map(l=>{
+    if (!l.hasData) {
+      return `<div class="tl-row"><div class="tl-label">${LANE_SHORT[l.label].replace('\n','<br>')}</div><div class="tl-track-wrap"><div class="tl-none" style="padding-top:2px;">해당 없음</div></div></div>`;
+    }
+    const color = LANE_COLOR[l.label];
+    const shapes = ['','sq',''];
+    let dots = '';
+    l.subEvents.forEach((sub, si)=>{
+      sub.months.forEach(mo=>{
+        const pct = Math.min(100, (mo/horizon)*100);
+        const shapeClass = si===1 ? 'sq' : '';
+        dots += `<span class="tl-dot ${shapeClass}" style="left:${pct}%;background:${color};" title="${sub.raw} · ${fmt(mo)}"></span>`;
+      });
+    });
+    return `<div class="tl-row">
+      <div class="tl-label">${LANE_SHORT[l.label].replace('\n','<br>')}</div>
+      <div class="tl-track-wrap"><div class="tl-track">${dots}</div></div>
+    </div>`;
+  }).join('');
+
+  const axisHtml = `<div class="tl-row"><div class="tl-label"></div><div class="tl-track-wrap"><div style="position:relative;height:12px;">${
+    ticks.map(t=>`<span class="tl-month" style="left:${(t/horizon)*100}%;">${fmt(t)}</span>`).join('')
+  }</div></div></div>`;
+
+  const legend = lanes.filter(l=>l.hasData).map(l=>{
+    const color = LANE_COLOR[l.label];
+    const texts = l.subEvents.map(s=>s.raw).join(' · ');
+    return `<div><span class="sw" style="background:${color};"></span><strong>${l.label}</strong> — ${texts}</div>`;
+  }).join('');
+
+  return `<div class="timeline-box">
+    <div class="timeline-title">📅 케어 주기 한눈에 보기 <span style="font-weight:400;color:var(--grey);">(총 ${fmt(horizon)} 기준)</span></div>
+    ${rowsHtml}
+    ${axisHtml}
+    <div class="tl-legend">${legend}</div>
+    <div class="tl-note">※ 살균·클리닝, 성능 점검은 방문관리 시 함께 진행됩니다.</div>
+  </div>`;
+}
+
+/* ---------------- 렌더링 ---------------- */
+const listEl = document.getElementById('productList');
+const chipRow = document.getElementById('chipRow');
+const emptyState = document.getElementById('emptyState');
+
+function renderDetailList(product, tierIdx){
+  return `<div class="detail-list">` + product.items.map(item=>{
+    const meta = ITEM_META[item.label] || {icon:'•',desc:''};
+    const raw = item.vals[tierIdx];
+    const isDash = (raw===null||raw===undefined||String(raw).trim()===''||String(raw).trim()==='-');
+    const text = isDash ? '해당 서비스가 포함되지 않습니다.' : String(raw);
+    return `<div class="detail-item ${tierIdx===0?'premium':''}">
+      <div class="d-head">
+        <span class="d-icon">${meta.icon}</span>
+        <span class="d-label">${item.label}</span>
+        <span class="d-info" onclick="this.parentElement.nextElementSibling.classList.toggle('show')">i</span>
+      </div>
+      <div class="d-desc">${meta.desc}</div>
+      <div class="d-value ${isDash?'dash':''}">${text}</div>
+    </div>`;
+  }).join('') + `</div>`;
+}
+
+function renderTierTabs(product, cardIdx, activeIdx){
+  return `<div class="tier-tabs">` + product.tiers.map((t,i)=>
+    `<button class="tier-btn ${i===activeIdx?'active':''}" onclick="switchTier(${cardIdx},${i})">${t}${i===0?'<span class="star">★</span>':''}</button>`
+  ).join('') + `</div>`;
+}
+
+function renderCardBody(product, cardIdx, tierIdx){
+  return renderTierTabs(product, cardIdx, tierIdx)
+       + renderTimeline(product, tierIdx)
+       + renderDetailList(product, tierIdx);
+}
+
+const cardState = DATA.map(()=>({tier:0}));
+
+DATA.forEach((product, idx)=>{
+  const card = document.createElement('section');
+  card.className = 'product-card';
+  card.id = 'card-' + idx;
+  card.dataset.name = product.name;
+  card.innerHTML = `
+    <button class="product-header" onclick="toggleCard(${idx})">
+      <span class="p-icon">${PRODUCT_SVG[product.name] || ''}</span>
+      <span class="p-main">
+        <div class="p-name">${product.name}${product.sub?`<span class="p-sub">${product.sub}</span>`:''}</div>
+        <div class="p-tiers">${product.tiers.join(' · ')}</div>
+      </span>
+      <span class="chevron">⌄</span>
+    </button>
+    <div class="product-body" id="body-${idx}"></div>
+  `;
+  listEl.appendChild(card);
+
+  const chip = document.createElement('button');
+  chip.className = 'chip';
+  chip.textContent = product.icon + ' ' + product.name;
+  chip.onclick = () => { openCard(idx, true); };
+  chip.id = 'chip-' + idx;
+  chipRow.appendChild(chip);
+});
+
+function toggleCard(idx){
+  const card = document.getElementById('card-'+idx);
+  const isOpen = card.classList.contains('open');
+  if (isOpen) { closeCard(idx); }
+  else { openCard(idx, true); }
+}
+function openCard(idx, scroll){
+  const card = document.getElementById('card-'+idx);
+  // 아코디언: 다른 제품 카드는 모두 닫는다
+  DATA.forEach((_, i) => { if (i !== idx) closeCard(i); });
+  if (!card.classList.contains('open')) {
+    document.getElementById('body-'+idx).innerHTML = renderCardBody(DATA[idx], idx, cardState[idx].tier);
+  }
+  card.classList.add('open');
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  const chip = document.getElementById('chip-'+idx);
+  if (chip) chip.classList.add('active');
+  if (scroll) setTimeout(()=>card.scrollIntoView({behavior:'smooth', block:'start'}), 60);
+}
+function closeCard(idx){
+  document.getElementById('card-'+idx).classList.remove('open');
+}
+function switchTier(cardIdx, tierIdx){
+  cardState[cardIdx].tier = tierIdx;
+  document.getElementById('body-'+cardIdx).innerHTML = renderCardBody(DATA[cardIdx], cardIdx, tierIdx);
+}
+window.toggleCard = toggleCard;
+window.switchTier = switchTier;
+
+/* ---------------- 검색 & 자동완성 ---------------- */
+const searchInput = document.getElementById('searchInput');
+const clearBtn = document.getElementById('clearBtn');
+const autocompleteEl = document.getElementById('autocomplete');
+
+function searchIndex(){
+  return DATA.map((p,idx)=>{
+    const itemLabels = p.items.map(it=>it.label).join(' ');
+    return {
+      idx,
+      name: p.name,
+      sub: p.sub,
+      icon: p.icon,
+      tiers: p.tiers.join(', '),
+      hay: [p.name, p.sub, p.tiers.join(' '), itemLabels].join(' ')
+    };
+  });
+}
+const INDEX = searchIndex();
+
+function highlight(text, query){
+  if (!query) return text;
+  const t = norm(text), q = norm(query);
+  let pos = t.indexOf(q);
+  if (pos === -1) return text; // chosung-only match: skip highlight
+  return text.slice(0,pos) + '<mark>' + text.slice(pos,pos+q.length) + '</mark>' + text.slice(pos+q.length);
+}
+
+function runSearch(query){
+  const q = query.trim();
+  clearBtn.hidden = q.length===0;
+
+  if (!q) {
+    autocompleteEl.hidden = true;
+    document.querySelectorAll('.product-card').forEach(c=>c.style.display='');
+    emptyState.hidden = true;
+    return;
+  }
+
+  const results = INDEX
+    .map(r => {
+      let rank = 3;
+      if (matches(r.name,q)) rank = 1;
+      else if (matches(r.sub,q)) rank = 2;
+      else if (matches(r.hay,q)) rank = 3;
+      else rank = 0;
+      return {...r, rank};
+    })
+    .filter(r => r.rank > 0)
+    .sort((a,b) => a.rank - b.rank);
+
+  // autocomplete dropdown (top 6, product-name focused)
+  if (results.length) {
+    autocompleteEl.hidden = false;
+    autocompleteEl.innerHTML = results.slice(0,6).map(r=>`
+      <div class="ac-item" onclick="selectResult(${r.idx})">
+        <span class="ac-icon">${r.icon}</span>
+        <span class="ac-main">
+          <div class="ac-name">${highlight(r.name, q)}${r.sub?` <span style="font-weight:400;color:var(--grey);font-size:0.78rem;">${r.sub}</span>`:''}</div>
+          <div class="ac-meta">${r.tiers}</div>
+        </span>
+      </div>
+    `).join('');
+  } else {
+    autocompleteEl.hidden = false;
+    autocompleteEl.innerHTML = `<div class="ac-empty">'${q}'에 대한 검색 결과가 없습니다</div>`;
+  }
+
+  // filter visible list
+  const matchIdxs = new Set(results.map(r=>r.idx));
+  document.querySelectorAll('.product-card').forEach((c,i)=>{
+    c.style.display = matchIdxs.has(i) ? '' : 'none';
+  });
+  emptyState.hidden = results.length !== 0;
+}
+
+function selectResult(idx){
+  searchInput.value = DATA[idx].name;
+  autocompleteEl.hidden = true;
+  document.querySelectorAll('.product-card').forEach(c=>c.style.display='');
+  emptyState.hidden = true;
+  openCard(idx, true);
+}
+window.selectResult = selectResult;
+
+searchInput.addEventListener('input', e => runSearch(e.target.value));
+searchInput.addEventListener('focus', e => { if (e.target.value.trim()) autocompleteEl.hidden = false; });
+document.addEventListener('click', e=>{
+  if (!e.target.closest('.search-wrap')) autocompleteEl.hidden = true;
+});
+clearBtn.addEventListener('click', ()=>{
+  searchInput.value='';
+  runSearch('');
+  searchInput.focus();
+});
+</script>
+</body>
+</html>
