@@ -17,3 +17,4 @@ build/
 
 # 로컬 미리보기 설정 (경로가 PC마다 달라 공유하지 않음)
 .claude/
+tools/node_modules/

@@ -1,0 +1,11 @@
+{
+  "name": "care-guide-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:fonts": "node build-fonts.mjs"
+  },
+  "dependencies": {
+    "subset-font": "^2.4.0"
+  }
+}
