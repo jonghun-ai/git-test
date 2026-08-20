@@ -388,6 +388,65 @@
     .d-info:hover{background:#c9d2e4;}
     .clear-btn:hover{background:#dfe3ea;}
   }
+
+  /* ==================== LG Smart_H 서체 ====================
+     Light 300 / Regular 400 / SemiBold 600 / Bold 700
+     local() 우선 — 기기에 설치돼 있으면 내려받지 않음 */
+  @font-face{
+    font-family:"LG Smart";font-style:normal;font-weight:300;font-display:swap;
+    src:local("LG Smart_H Light"),local("LGSmartH-Light"),url("fonts/LGSMHAL.TTF") format("truetype");
+  }
+  @font-face{
+    font-family:"LG Smart";font-style:normal;font-weight:400;font-display:swap;
+    src:local("LG Smart_H Regular"),local("LGSmartH-Regular"),url("fonts/LGSMHAR.TTF") format("truetype");
+  }
+  @font-face{
+    font-family:"LG Smart";font-style:normal;font-weight:600;font-display:swap;
+    src:local("LG Smart_H SemiBold"),local("LGSmartH-SemiBold"),url("fonts/LGSMHASB.TTF") format("truetype");
+  }
+  @font-face{
+    font-family:"LG Smart";font-style:normal;font-weight:700;font-display:swap;
+    src:local("LG Smart_H Bold"),local("LGSmartH-Bold"),url("fonts/LGSMHAB.TTF") format("truetype");
+  }
+
+  body{
+    font-family:"LG Smart","Pretendard","Apple SD Gothic Neo","Malgun Gothic","맑은 고딕",sans-serif;
+    font-weight:400;   /* 기본 = 레귤러 */
+  }
+
+  /* --- Bold 700: 화면 제목 / 제품명 --- */
+  .brand,
+  .p-name,
+  .ac-name,
+  .timeline-title,
+  .tier-btn.active{font-weight:700;}
+
+  /* --- SemiBold 600: 소제목 / 조작 요소 / 항목 이름 --- */
+  .brand .badge,
+  .chip,
+  .tier-btn,
+  .d-label,
+  .d-info,
+  .tl-label,
+  .tl-legend strong{font-weight:600;}
+
+  /* --- Regular 400: 본문 값 / 입력 --- */
+  .d-value,
+  .search-box input,
+  .ac-item{font-weight:400;}
+
+  /* --- Light 300: 보조 설명 / 메타 / 캡션 --- */
+  .p-sub,
+  .p-tiers,
+  .ac-meta,
+  .ac-empty,
+  .d-desc,
+  .tl-month,
+  .tl-legend,
+  .tl-note,
+  .tl-none,
+  .empty-state,
+  .timeline-title span{font-weight:300;}
 </style>
 </head>
 <body>
