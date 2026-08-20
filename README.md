@@ -179,7 +179,12 @@ cd tools && npm install && npm run build:fonts
 
 ## 배포 현황
 
-| 채널 | 상태 |
+| 채널 | 주소 |
 |---|---|
-| GitHub | https://github.com/jonghun-ai/git-test (Private) |
-| 미리보기 링크 | Artifact로 비공개 게시 — 저장소와 자동 연동되지 않으며, 갱신은 수동 재게시 필요 |
+| 저장소 | https://github.com/jonghun-ai/care-guide (Public) |
+| Cloudflare | https://care-guide.goromiya.workers.dev |
+| GitHub Pages | https://jonghun-ai.github.io/care-guide/ |
+
+`main` 에 push 하면 Cloudflare 와 GitHub Pages 양쪽이 1~2분 내 자동 갱신됩니다.
+
+> 공개 저장소입니다. 고객 정보·인증 키 등 대외비 자료를 커밋하지 마세요.
