@@ -4,19 +4,25 @@ LG 가전 구독(렌탈) 고객에게 **제품별 케어 플랜을 설명하기 
 
 제품을 검색해 카드를 펼치면 플랜(요금제)별로 어떤 케어를 언제 받는지 한눈에 확인할 수 있습니다.
 
-> **현재 상태:** 프로토타입 (단일 HTML 파일) · 정식 웹 서비스로 전환 예정
+> **현재 상태:** 프로토타입 (단일 HTML 파일) · [배포 중](https://lg-care-guide.pages.dev) · 정식 웹 서비스로 전환 예정
 
 ---
 
 ## 빠른 시작
 
-빌드 도구나 서버가 필요 없습니다. 파일을 브라우저로 열기만 하면 됩니다.
+빌드 단계가 없습니다. 배포된 주소를 그대로 열어보시면 됩니다.
+
+**https://lg-care-guide.pages.dev**
+
+로컬에서 수정하며 확인할 때는 간단한 정적 서버를 띄우세요.
 
 ```bash
-start index.html
+npx serve .
 ```
 
-모바일 화면 기준으로 설계되어 있어, 브라우저 개발자도구의 모바일 뷰(375px 내외)에서 확인하는 것을 권장합니다.
+`start index.html` 처럼 파일을 직접 열어도 동작하지만, 브라우저가 `file://` 에서는 서체 파일을 차단합니다. LG Smart 가 설치되지 않은 PC 라면 기본 서체로 보이니 주의하세요.
+
+모바일 화면을 기준으로 설계되어 있어, 개발자도구의 모바일 뷰(375px 내외)와 데스크톱 폭을 함께 확인하는 것을 권장합니다.
 
 ---
 
@@ -171,7 +177,7 @@ cd tools && npm install && npm run build:fonts
 - [ ] **프레임워크 결정** — React/Next.js, Vue, 또는 현재의 순수 HTML 유지 중 선택
 - [ ] **정적/서버 구성 결정** — DB 및 백엔드 필요 여부
 - [ ] **관리자 편집 화면** — 케어 항목을 직접 수정하는 UI 필요 여부
-- [ ] **배포 환경 결정** — 사내 서버, Vercel 등
+- [x] ~~**배포 환경 결정** — Cloudflare Pages (git 연동 자동 배포)~~
 - [x] ~~**서체 경량화** — WOFF2 서브셋으로 13.9MB → 1.69MB~~
 - [ ] 알려진 이슈 정리
 
@@ -181,9 +187,9 @@ cd tools && npm install && npm run build:fonts
 
 | 채널 | 주소 |
 |---|---|
+| **서비스** | **https://lg-care-guide.pages.dev** (Cloudflare Pages) |
+| 예비 | https://jonghun-ai.github.io/care-guide/ (GitHub Pages) |
 | 저장소 | https://github.com/jonghun-ai/care-guide (Public) |
-| Cloudflare | https://care-guide.goromiya.workers.dev |
-| GitHub Pages | https://jonghun-ai.github.io/care-guide/ |
 
 `main` 에 push 하면 Cloudflare 와 GitHub Pages 양쪽이 1~2분 내 자동 갱신됩니다.
 
