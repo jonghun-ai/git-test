@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>구독 케어 안내 도우미</title>
 <style>
   :root{
@@ -341,6 +341,52 @@
   @media (min-width:480px){
     .p-icon{width:48px;height:48px;font-size:1.7rem;}
     .p-name{font-size:1.08rem;}
+  }
+
+  /* ==================== 반응형: 태블릿 / 데스크톱 ==================== */
+  :root{ --content-w:640px; }
+
+  /* 상단바 내부 요소도 카드와 같은 폭으로 정렬 (넓은 화면에서 검색창이 늘어지지 않도록) */
+  .topbar > *{
+    max-width:var(--content-w);
+    margin-left:auto;
+    margin-right:auto;
+  }
+  .product-list{max-width:var(--content-w);}
+
+  @media (min-width:768px){
+    :root{ --content-w:720px; }
+    body{padding-bottom:calc(40px + var(--safe-bottom));}
+    .topbar{padding:calc(18px + var(--safe-top)) 20px 14px;}
+    .brand{font-size:1.15rem;margin-bottom:12px;}
+    .search-box{height:50px;}
+    .search-box input{font-size:1rem;}
+    .chip-row{flex-wrap:wrap;overflow-x:visible;}   /* 가로 스크롤 대신 줄바꿈 */
+    .product-list{padding:20px 20px 10px;}
+    .product-header{padding:18px 20px;gap:14px;}
+    .p-name{font-size:1.1rem;}
+    .product-body{padding:0 20px 22px;}
+    .detail-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    .tl-label{width:66px;font-size:0.72rem;}
+  }
+
+  @media (min-width:1100px){
+    :root{ --content-w:880px; }
+    .detail-list{grid-template-columns:repeat(3,minmax(0,1fr));}
+    .timeline-box{padding:18px 18px 12px;}
+    .tl-month{font-size:0.66rem;}
+    .tl-legend{font-size:0.72rem;}
+  }
+
+  /* 마우스 환경에서만 hover 피드백 (터치에서는 잔상 방지) */
+  @media (hover:hover) and (pointer:fine){
+    .product-header:hover{background:#fdfbfc;}
+    .chip:hover{background:rgba(255,255,255,.26);}
+    .chip.active:hover{background:#fff;}
+    .ac-item:hover{background:var(--steel-light);}
+    .tier-btn:not(.active):hover{color:var(--navy);}
+    .d-info:hover{background:#c9d2e4;}
+    .clear-btn:hover{background:#dfe3ea;}
   }
 </style>
 </head>
