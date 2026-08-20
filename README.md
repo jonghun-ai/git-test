@@ -13,7 +13,7 @@ LG 가전 구독(렌탈) 고객에게 **제품별 케어 플랜을 설명하기 
 빌드 도구나 서버가 필요 없습니다. 파일을 브라우저로 열기만 하면 됩니다.
 
 ```bash
-start care_mobile.html
+start index.html
 ```
 
 모바일 화면 기준으로 설계되어 있어, 브라우저 개발자도구의 모바일 뷰(375px 내외)에서 확인하는 것을 권장합니다.
@@ -24,7 +24,7 @@ start care_mobile.html
 
 | 파일 | 설명 |
 |---|---|
-| `care_mobile.html` | 애플리케이션 전체 (HTML·CSS·JS 인라인) |
+| `index.html` | 애플리케이션 전체 (HTML·CSS·JS 인라인) |
 | `fonts/` | LG Smart_H 서체 4종 (Light·Regular·SemiBold·Bold, 합계 14.6MB) |
 | `README.md` | 이 문서 |
 | `.gitignore` | OS·에디터 파일 및 웹 전환 대비 Node 관련 항목 |
@@ -77,7 +77,7 @@ LG 전자 공식 서체 **LG Smart_H** 를 사용합니다. `@font-face` 의 `lo
 
 ## 수록 데이터
 
-제품 6종의 플랜별 케어 내용이 `care_mobile.html` 안의 `DATA` 배열에 하드코딩되어 있습니다.
+제품 6종의 플랜별 케어 내용이 `index.html` 안의 `DATA` 배열에 하드코딩되어 있습니다.
 
 | 제품 | 세부 | 플랜 |
 |---|---|---|
